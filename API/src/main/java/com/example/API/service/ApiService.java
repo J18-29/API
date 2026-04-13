@@ -1,55 +1,48 @@
 package com.example.API.service;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.API.model.Producto;
+import com.example.API.repository.ProductoRepository;
 
 @Service
 public class ApiService {
-    private ArrayList<Producto> productos = new ArrayList<>();
- private int contadorId = 1;
+ @Autowired
+ private ProductoRepository repository;
  //CREATE
  public Producto crear(Producto producto) {
- producto.setId(contadorId++);
- productos.add(producto);
- return producto;
+ return repository.save(producto); // JPA asigna ID automáticamente
  }
  //READ - obtener todos
- public ArrayList<Producto> listar() {
- return productos;
+ public List<Producto> listar() {
+ return repository.findAll();
  }
  //READ - obtener por id
- public Producto buscarPorId(int id) {
- // return productos.get(id);
- for(Producto p : productos){
- if(p.getId()==id) return p;
- }
- return null;
+ public Producto buscarPorId(long id) {
+ return repository.findById(id).orElse(null);
  }
 
  //UPDATE
  public Producto actualizar(int id, Producto productoActualizado) {
- Producto productoOptional = buscarPorId(id);
- int contador=0;
- if (productoOptional!=null) {
- for(Producto p : productos){
- if(p.getId()==id) productos.set(contador,productoActualizado);
- contador++;
+ Producto existente = repository.findById((long) id).orElse(null);
+ if (existente != null) {
+ existente.setName(productoActualizado.getName());
+ existente.setPrecio(productoActualizado.getPrecio());
+ existente.setImagen(productoActualizado.getImagen());
+ return repository.save(existente);
  }
- }
- return null;
+ return null; // no existe
  }
  //DELETE
- public String eliminar(int id) {
- boolean encontrado=false;
- for (int i = 0; i < productos.size(); i++) {
- if (productos.get(i).getId() == id) {
- productos.remove(i); encontrado=true;
+ public String eliminar(long id) {
+ Producto existente = repository.findById(id).orElse(null);
+ if (existente != null) {
+ repository.deleteById(id);
+ return "Producto " + id + " eliminado";
  }
+ return "Producto " + id + " no encontrado";
  }
- return encontrado ? "Producto "+id+" eliminado":"Producto "+id+ " no encontrado";
- }
-
 }

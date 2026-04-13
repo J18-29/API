@@ -1,22 +1,27 @@
 package com.example.API.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class Producto {
- private int id;
+   @Id
+ private long id;
  private String name;
  private double precio;
  private String imagen;
  public Producto() {}
- public Producto(int id, String name,
+ public Producto(long id, String name,
 double precio,String imagen) {
  this.id = id;
  this.name = name;
  this.precio=precio;
  this.imagen=imagen;
  }
- public int getId() {
+ public long getId() {
     return id;
  }
- public void setId(int id) {
+ public void setId(long id) {
     this.id = id;
  }
  public String getName() {
